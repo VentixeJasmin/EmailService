@@ -12,10 +12,12 @@ public class AccountCreatedMessageHandler : BackgroundService
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<AccountCreatedMessageHandler> _logger;
 
+
     public AccountCreatedMessageHandler(ServiceBusClient serviceBusClient, IServiceProvider serviceProvider, ILogger<AccountCreatedMessageHandler> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _logger.LogInformation("AccountCreatedMessageHandler constructor called"); // Add this
 
         _processor = serviceBusClient.CreateProcessor("account-created", "email");
         _processor.ProcessMessageAsync += ProcessMessageAsync;
@@ -24,7 +26,9 @@ public class AccountCreatedMessageHandler : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("Starting ServiceBus message processing..."); // Add this
         await _processor.StartProcessingAsync(stoppingToken);
+        _logger.LogInformation("ServiceBus message processing started successfully"); // Add this
     }
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs args)

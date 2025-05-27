@@ -35,7 +35,7 @@ public class VerificationController(IVerificationService verificationService, Se
     }
 
     [HttpPost("verify")]
-    public async Task<IActionResult> Verify(VerifyVerificationCodeRequest req)
+    public async Task<IActionResult> Verify([FromBody] VerifyVerificationCodeRequest req)
     {
         if (!ModelState.IsValid)
             return BadRequest(new { Error = "Invalid or expired verification code." });
@@ -46,7 +46,7 @@ public class VerificationController(IVerificationService verificationService, Se
             await PublishEmailVerifiedEvent(req.Email);
         }
 
-        return result.Succeeded ? Ok(result) : StatusCode(500, result);
+        return result.Succeeded ? Ok( new { message = "Registration succeeded."}) : StatusCode(500, result);
     }
 
     private async Task PublishVerificationSentEvent(string email)
