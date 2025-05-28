@@ -3,6 +3,7 @@ using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Caching.Distributed;
 using Presentation.Interfaces;
 using Presentation.Models;
+using StackExchange.Redis;
 
 namespace Presentation.Services;
 
@@ -83,24 +84,45 @@ public class VerificationService(IConfiguration configuration, EmailClient email
     public VerificationServiceResult VerifyVerificationCode(VerifyVerificationCodeRequest request)
     {
         var key = request.Email.ToLowerInvariant();
-        var storedCode = _cache.Get(key);
 
-        if (storedCode != null) 
+        try
         {
-            if (storedCode.Equals(request.Code))
+            var storedCode = _cache.GetString(key);
+
+            if (storedCode != null)
             {
-                _cache.Remove(key);
-                return new VerificationServiceResult
+                if (storedCode.Equals(request.Code))
                 {
-                    Succeeded = true
-                };
-            }
-        }
+                    try
+                    {
+                        _cache.Remove(key);
+                    }
+                    catch (RedisConnectionException)
+                    {
 
-        return new VerificationServiceResult
+                    }
+
+                    return new VerificationServiceResult
+                    {
+                        Succeeded = true
+                    };
+                }
+            }
+
+            return new VerificationServiceResult
+            {
+                Succeeded = false,
+                Error = "Invalid or expired verification code."
+            };
+        }
+        catch (RedisConnectionException)
         {
-            Succeeded = false,
-            Error = "Invalid or expired verification code."
-        };
+            // Maybe retry once or return a specific error
+            return new VerificationServiceResult
+            {
+                Succeeded = false,
+                Error = "Verification service temporarily unavailable. Please try again."
+            };
+        }
     }
 }

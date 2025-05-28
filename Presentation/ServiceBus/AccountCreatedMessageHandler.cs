@@ -11,10 +11,12 @@ public class AccountCreatedMessageHandler : BackgroundService
     private readonly ServiceBusProcessor _processor;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<AccountCreatedMessageHandler> _logger;
+    private readonly ServiceBusClient _serviceBusClient;
 
 
     public AccountCreatedMessageHandler(ServiceBusClient serviceBusClient, IServiceProvider serviceProvider, ILogger<AccountCreatedMessageHandler> logger)
     {
+        _serviceBusClient = serviceBusClient;
         _serviceProvider = serviceProvider;
         _logger = logger;
         _logger.LogInformation("AccountCreatedMessageHandler constructor called"); // Add this
@@ -54,6 +56,7 @@ public class AccountCreatedMessageHandler : BackgroundService
                 if (result.Succeeded)
                 {
                     await args.CompleteMessageAsync(args.Message);
+                    await PublishVerificationSentEvent(userRegisteredEvent.Email);
                 }
             }
         }
@@ -73,6 +76,19 @@ public class AccountCreatedMessageHandler : BackgroundService
     {
         await _processor.StopProcessingAsync(cancellationToken);
         await base.StopAsync(cancellationToken);
+    }
+
+    private async Task PublishVerificationSentEvent(string email)
+    {
+        var sender = _serviceBusClient.CreateSender("account-created");
+        var eventMessage = new VerificationCodeSentEvent
+        {
+            Email = email
+        };
+
+        var message = new ServiceBusMessage(JsonSerializer.Serialize(eventMessage));
+
+        await sender.SendMessageAsync(message);
     }
 }
 

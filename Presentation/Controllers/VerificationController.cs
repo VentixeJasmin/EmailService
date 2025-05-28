@@ -44,9 +44,12 @@ public class VerificationController(IVerificationService verificationService, Se
         if (result.Succeeded)
         {
             await PublishEmailVerifiedEvent(req.Email);
+            return Ok(new { message = "Registration succeeded." });
         }
-
-        return result.Succeeded ? Ok( new { message = "Registration succeeded."}) : StatusCode(500, result);
+        else
+        {
+            return StatusCode(500, result);
+        }
     }
 
     private async Task PublishVerificationSentEvent(string email)
