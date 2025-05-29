@@ -3,5 +3,5 @@
 public class EmailVerifiedEvent : BaseEvent
 {
     public string Email { get; set; } = null!;
-    public string EventType => "EmailVerified";
+    public string EventType { get; set; } = "EmailVerified";
 }
