@@ -50,7 +50,7 @@ public class AccountCreatedMessageHandler : BackgroundService
 
                 var result = await verificationService.SendVerificationCodeAsync(new SendVerificationCodeRequest
                 {
-                    Email = userRegisteredEvent.Email!,
+                    Email = userRegisteredEvent!.Email!,
                     FirstName = userRegisteredEvent.FirstName,
                     LastName = userRegisteredEvent.LastName
                 });

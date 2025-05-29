@@ -57,7 +57,7 @@ public class VerificationService(IConfiguration configuration, EmailClient email
                     <tr>
                         <td>
                             <p style=""color:#434345; margin:0;"">
-                                Follow this <a href=""https://yourdomain.com/verify"" style=""color:#5562A2;"">link</a> and enter the code 
+                                Follow this <a href=""https://jolly-ocean-090980503.6.azurestaticapps.net/verify"" style=""color:#5562A2;"">link</a> and enter the code 
                                 <span style=""color:#5562A2; font-size:24px; font-weight:bold;"">{code}</span> to verify your email address.
                             </p>
                         </td>
