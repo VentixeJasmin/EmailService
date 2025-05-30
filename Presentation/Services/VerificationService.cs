@@ -16,7 +16,6 @@ public class VerificationService(IConfiguration configuration, EmailClient email
 
     private static readonly Random _random = new();
 
-
     public async Task<VerificationServiceResult> SendVerificationCodeAsync(SendVerificationCodeRequest request)
     {
         if (request == null || String.IsNullOrWhiteSpace(request.Email))
@@ -30,8 +29,9 @@ public class VerificationService(IConfiguration configuration, EmailClient email
 
         var code = _random.Next(100000, 999999).ToString();
         var subject = "Your verification code from Ventixe";
-        var plainTextContent = $"Hello {request.FirstName} {request.LastName}! Follow this link and enter the code {code} to verify your email address.";
-        //ChatGPT 4o helped me with the email styling. 
+        var plainTextContent = $"Hello {request.FirstName} {request.LastName}! Follow the the link and enter the code {code} to verify your email address. Link: https://jolly-ocean-090980503.6.azurestaticapps.net/verify?email={request.Email}";
+        
+        //ChatGPT 4o helped me with the email styling here.  
         var htmlContent = @$"
 <!DOCTYPE html>
 <html lang=""en"">
@@ -57,7 +57,7 @@ public class VerificationService(IConfiguration configuration, EmailClient email
                     <tr>
                         <td>
                             <p style=""color:#434345; margin:0;"">
-                                Follow this <a href=""https://jolly-ocean-090980503.6.azurestaticapps.net/verify"" style=""color:#5562A2;"">link</a> and enter the code 
+                                Follow this <a href=""https://jolly-ocean-090980503.6.azurestaticapps.net/verify?email={request.Email}"" style=""color:#5562A2;"">link</a> and enter the code 
                                 <span style=""color:#5562A2; font-size:24px; font-weight:bold;"">{code}</span> to verify your email address.
                             </p>
                         </td>
