@@ -8,10 +8,11 @@ using Presentation.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 Console.WriteLine("=== EMAIL SERVICE STARTING ===");
-Console.WriteLine($"SenderAddress: {builder.Configuration["SenderAddress"]}");
 Console.WriteLine($"ServiceBus: {builder.Configuration.GetConnectionString("ServiceBus")}");
-Console.WriteLine($"All config keys: {string.Join(", ", builder.Configuration.AsEnumerable().Select(x => x.Key))}");
-Console.WriteLine("=== EMAIL SERVICE CONFIG CHECK DONE ===");
+Console.WriteLine($"ACS: {builder.Configuration.GetConnectionString("ACS")}");
+Console.WriteLine($"Redis: {builder.Configuration.GetConnectionString("Redis")}");
+Console.WriteLine($"ACS:SenderAddress: {builder.Configuration["ACS:SenderAddress"]}");
+Console.WriteLine("=== EMAIL SERVICE CONFIG CHECK ===");
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
