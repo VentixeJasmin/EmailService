@@ -36,11 +36,14 @@ public class AccountCreatedMessageHandler : BackgroundService
         try
         {
             Console.WriteLine("=== RECEIVED SERVICEBUS MESSAGE ===");
-            Console.WriteLine($"Message received: {messageContent}");
-            // Your existing email sending code
+            
             
 
             var messageBody = args.Message.Body.ToString();
+
+            Console.WriteLine($"Message received: {messageBody}");
+            // Your existing email sending code
+
             var baseEvent = JsonSerializer.Deserialize<JsonElement>(messageBody);
             var eventType = baseEvent.GetProperty("EventType").GetString();
 
