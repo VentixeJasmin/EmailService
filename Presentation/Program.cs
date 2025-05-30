@@ -7,6 +7,12 @@ using Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine("=== EMAIL SERVICE STARTING ===");
+Console.WriteLine($"SenderAddress: {builder.Configuration["SenderAddress"]}");
+Console.WriteLine($"ServiceBus: {builder.Configuration.GetConnectionString("ServiceBus")}");
+Console.WriteLine($"All config keys: {string.Join(", ", builder.Configuration.AsEnumerable().Select(x => x.Key))}");
+Console.WriteLine("=== EMAIL SERVICE CONFIG CHECK DONE ===");
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
