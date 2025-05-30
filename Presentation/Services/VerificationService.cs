@@ -78,6 +78,8 @@ public class VerificationService(IConfiguration configuration, EmailClient email
             }
         );
 
+        Console.WriteLine("=== EMAIL PROCESSING COMPLETE ===");
+
         try
         {
             var emailSendOperation = await _emailClient.SendAsync(Azure.WaitUntil.Started, emailMessage);

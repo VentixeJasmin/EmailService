@@ -1,4 +1,5 @@
-﻿using Azure.Messaging.ServiceBus;
+﻿using Azure.Messaging;
+using Azure.Messaging.ServiceBus;
 using Presentation.Interfaces;
 using Presentation.Models;
 using System.Text.Json;
@@ -34,6 +35,11 @@ public class AccountCreatedMessageHandler : BackgroundService
     {
         try
         {
+            Console.WriteLine("=== RECEIVED SERVICEBUS MESSAGE ===");
+            Console.WriteLine($"Message received: {messageContent}");
+            // Your existing email sending code
+            
+
             var messageBody = args.Message.Body.ToString();
             var baseEvent = JsonSerializer.Deserialize<JsonElement>(messageBody);
             var eventType = baseEvent.GetProperty("EventType").GetString();
