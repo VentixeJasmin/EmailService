@@ -4,13 +4,7 @@ using Presentation.Interfaces;
 using Presentation.ServiceBus;
 using Presentation.Services;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Logging.ClearProviders(); // <-- Important!
-builder.Logging.AddConsole();
-builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -18,9 +12,7 @@ builder.Services.AddOpenApi();
 //Got help with the ServiceBus configuring by Claude AI
 builder.Services.AddSingleton<ServiceBusClient>(provider =>
 {
-    var logger = provider.GetRequiredService<ILogger<Program>>();
     var connectionString = builder.Configuration.GetConnectionString("ServiceBus");
-    logger.LogInformation($"ServiceBus connection string exists: {!string.IsNullOrEmpty(connectionString)}");
     return new ServiceBusClient(connectionString);
 });
 
@@ -38,16 +30,9 @@ builder.Services.AddSingleton<EmailClient>(provider =>
 });
 builder.Services.AddTransient<IVerificationService, VerificationService>();
 
-
-
 var app = builder.Build();
 
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-logger.LogInformation("=== EMAIL SERVICE STARTING ===");
-
 app.MapGet("/", () => "EmailService is running!");
-
-logger.LogInformation("=== EMAIL SERVICE CONFIGURED, STARTING APP ===");
 
 app.MapOpenApi();
 
@@ -58,8 +43,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-logger.LogInformation("Email service is starting...");
 
 app.Run();
 
