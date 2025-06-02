@@ -30,7 +30,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
-builder.Services.AddSingleton(x => new EmailClient(builder.Configuration["ConnectionStrings:ACS"])); 
+builder.Services.AddSingleton(x => new EmailClient(builder.Configuration.GetConnectionString("ACS")));
 builder.Services.AddTransient<IVerificationService, VerificationService>();
 
 
