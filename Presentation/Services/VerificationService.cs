@@ -68,31 +68,46 @@ public class VerificationService(IConfiguration configuration, EmailClient email
     </table>
 </body>
 </html>";
-        var emailMessage = new EmailMessage(
-            senderAddress: _configuration["SenderAddress"],
-            recipients: new EmailRecipients([new(request.Email)]),
-            content: new EmailContent(subject)
-            {
-                PlainText = plainTextContent,
-                Html = htmlContent
-            }
-        );
+        //var emailMessage = new EmailMessage(
+        //    senderAddress: _configuration["SenderAddress"],
+        //    recipients: new EmailRecipients([new(request.Email)]),
+        //    content: new EmailContent(subject)
+        //    {
+        //        PlainText = plainTextContent,
+        //        Html = htmlContent
+        //    }
+        //);
 
         Console.WriteLine("=== EMAIL PROCESSING COMPLETE ===");
 
         try
         {
-            var emailSendOperation = await _emailClient.SendAsync(Azure.WaitUntil.Started, emailMessage);
-            await SaveVerificationCodeAsync(new SaveVerificationCodeRequest
+            var emailSendOperation = _emailClient.Send(Azure.WaitUntil.Completed, 
+                senderAddress : _configuration["SenderAddress"],
+                recipientAddress: request.Email,
+                subject: subject,
+                htmlContent: htmlContent,
+                plainTextContent: plainTextContent);
+
+            if (emailSendOperation.HasCompleted)
             {
-                Email = request.Email,
-                Code = code,
-                ValidFor = TimeSpan.FromMinutes(5)
-            });
+                await SaveVerificationCodeAsync(new SaveVerificationCodeRequest
+                {
+                    Email = request.Email,
+                    Code = code,
+                    ValidFor = TimeSpan.FromMinutes(5)
+                });
+                return new VerificationServiceResult
+                {
+                    Succeeded = true
+                }; 
+
+            }
             return new VerificationServiceResult
             {
-                Succeeded = true
-            }; 
+                Succeeded = false,
+            };
+
         }
         catch (Exception ex)
         {
