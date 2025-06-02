@@ -8,6 +8,7 @@ using Presentation.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders(); // <-- Important!
 builder.Logging.AddConsole();
 builder.Logging.SetMinimumLevel(LogLevel.Information);
 
@@ -47,8 +48,6 @@ logger.LogInformation("=== EMAIL SERVICE STARTING ===");
 app.MapGet("/", () => "EmailService is running!");
 
 logger.LogInformation("=== EMAIL SERVICE CONFIGURED, STARTING APP ===");
-app.Run();
-
 
 app.MapOpenApi();
 
