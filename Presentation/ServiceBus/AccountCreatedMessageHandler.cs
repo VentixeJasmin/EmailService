@@ -17,8 +17,7 @@ public class AccountCreatedMessageHandler : BackgroundService
 
     public AccountCreatedMessageHandler(ServiceBusClient serviceBusClient, IServiceProvider serviceProvider, ILogger<AccountCreatedMessageHandler> logger)
     {
-        //Console.WriteLine("=== CREATING SERVICEBUS PROCESSOR ===");
-        //Console.WriteLine($"Topic: account-created, Subscription: email");
+
 
         _serviceBusClient = serviceBusClient;
         _serviceProvider = serviceProvider;
@@ -27,15 +26,11 @@ public class AccountCreatedMessageHandler : BackgroundService
         _processor = serviceBusClient.CreateProcessor("account-created", "email");
         _processor.ProcessMessageAsync += ProcessMessageAsync;
         _processor.ProcessErrorAsync += ProcessErrorAsync;
-
-        //Console.WriteLine("=== SERVICEBUS PROCESSOR CREATED ===");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        //Console.WriteLine("=== STARTING SERVICEBUS PROCESSOR ===");
         await _processor.StartProcessingAsync(stoppingToken);
-        //Console.WriteLine("=== SERVICEBUS PROCESSOR STARTED ===");
     }
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs args)

@@ -69,7 +69,7 @@ public class VerificationService(IConfiguration configuration, EmailClient email
 </body>
 </html>";
         var emailMessage = new EmailMessage(
-            senderAddress: _configuration["ACS:SenderAddress"],
+            senderAddress: _configuration["SenderAddress"],
             recipients: new EmailRecipients([new(request.Email)]),
             content: new EmailContent(subject)
             {
