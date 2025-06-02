@@ -1,75 +1,67 @@
-//using Azure.Communication.Email;
-//using Azure.Messaging.ServiceBus;
-//using Presentation.Interfaces;
-//using Presentation.ServiceBus;
-//using Presentation.Services;
-
-//Console.WriteLine("=== EMAIL SERVICE STARTING ===");
-
-//var builder = WebApplication.CreateBuilder(args);
-//Console.WriteLine("=== BUILDER CREATED ===");
-
-//Console.WriteLine($"ServiceBus: {builder.Configuration.GetConnectionString("ServiceBus")}");
-//Console.WriteLine($"ACS: {builder.Configuration.GetConnectionString("ACS")}");
-//Console.WriteLine($"Redis: {builder.Configuration.GetConnectionString("Redis")}");
-//Console.WriteLine($"ACS:SenderAddress: {builder.Configuration["ACS:SenderAddress"]}");
-//Console.WriteLine("=== EMAIL SERVICE CONFIG CHECK ===");
-
-//builder.Services.AddControllers();
-//builder.Services.AddOpenApi();
-
-////Got help with the ServiceBus configuring by Claude AI
-//builder.Services.AddSingleton<ServiceBusClient>(provider =>
-//{
-//    var connectionString = builder.Configuration.GetConnectionString("ServiceBus");
-
-//    Console.WriteLine($"ServiceBus connection: {connectionString != null}");
-
-//    return new ServiceBusClient(connectionString);
-//});
-
-//builder.Services.AddHostedService<AccountCreatedMessageHandler>();
-
-//Console.WriteLine("=== BACKGROUND SERVICE REGISTERED ===");
-
-//builder.Services.AddStackExchangeRedisCache(options =>
-//{
-//    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-//});
-//builder.Services.AddSingleton(x => new EmailClient(builder.Configuration["ConnectionStrings:ACS"])); 
-//builder.Services.AddTransient<IVerificationService, VerificationService>();
-
-//Console.WriteLine("=== ABOUT TO BUILD APP ===");
-
-//var app = builder.Build();
-
-//Console.WriteLine("=== APP BUILT, ABOUT TO RUN ===");
+using Azure.Communication.Email;
+using Azure.Messaging.ServiceBus;
+using Presentation.Interfaces;
+using Presentation.ServiceBus;
+using Presentation.Services;
 
 
-//app.MapOpenApi();
-
-//app.UseHttpsRedirection();
-//app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
-
-//app.UseAuthentication();
-//app.UseAuthorization();
-
-//app.MapControllers();
-
-//var logger = app.Services.GetRequiredService<ILogger<Program>>();
-//logger.LogInformation("Email service is starting...");
-
-//app.Run();
-
-
-Console.WriteLine("=== MINIMAL EMAIL SERVICE TEST ===");
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
+builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+
+//Got help with the ServiceBus configuring by Claude AI
+builder.Services.AddSingleton<ServiceBusClient>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<Program>>();
+    var connectionString = builder.Configuration.GetConnectionString("ServiceBus");
+    logger.LogInformation($"ServiceBus connection string exists: {!string.IsNullOrEmpty(connectionString)}");
+    return new ServiceBusClient(connectionString);
+});
+
+builder.Services.AddHostedService<AccountCreatedMessageHandler>();
+
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
+builder.Services.AddSingleton(x => new EmailClient(builder.Configuration["ConnectionStrings:ACS"])); 
+builder.Services.AddTransient<IVerificationService, VerificationService>();
+
+
+
 var app = builder.Build();
+
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("=== EMAIL SERVICE STARTING ===");
 
 app.MapGet("/", () => "EmailService is running!");
 
-Console.WriteLine("=== STARTING MINIMAL APP ===");
+logger.LogInformation("=== EMAIL SERVICE CONFIGURED, STARTING APP ===");
 app.Run();
+
+
+app.MapOpenApi();
+
+app.UseHttpsRedirection();
+app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("Email service is starting...");
+
+app.Run();
+
+
+
 
 
