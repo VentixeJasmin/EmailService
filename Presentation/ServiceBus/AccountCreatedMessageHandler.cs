@@ -23,7 +23,7 @@ public class AccountCreatedMessageHandler : BackgroundService
         _serviceProvider = serviceProvider;
         _logger = logger;
 
-        _processor = serviceBusClient.CreateProcessor("account-created", "email");
+        _processor = serviceBusClient.CreateProcessor("user-registered");
         _processor.ProcessMessageAsync += ProcessMessageAsync;
         _processor.ProcessErrorAsync += ProcessErrorAsync;
     }
