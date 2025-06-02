@@ -56,7 +56,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("Email service is starting...");
 
 app.Run();
